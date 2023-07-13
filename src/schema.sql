@@ -3,11 +3,10 @@ DROP DATABASE sdc;
 CREATE DATABASE sdc;
 
 CREATE TABLE cart (
-  id INTEGER UNIQUE,
+  id SERIAL PRIMARY KEY,
   user_session INTEGER NOT NULL,
   product_id INTEGER NOT NULL,
   active INTEGER NOT NULL,
-  PRIMARY KEY (id)
 );
 \COPY cart from '/USERS/victoriajquinto/Desktop/hr/SDC/Products/data/cart.csv' delimiter ',' header csv;
 
@@ -56,6 +55,12 @@ CREATE TABLE reviews (
   PRIMARY KEY (id)
 );
 \COPY reviews from '/USERS/victoriajquinto/Desktop/hr/SDC/Products/data/reviews.csv' delimiter ',' header csv;
+
+CREATE TABLE related (
+  id SERIAL PRIMARY KEY,
+  current_product_id INTEGER NOT NULL,
+  related_product_id INTEGER NOT NULL
+);
 
 CREATE TABLE skus (
   id INTEGER UNIQUE,
