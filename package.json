@@ -1,6 +1,6 @@
 {
   "scripts": {
-    "server-dev": "nodemon src/server.ts"
+    "server-dev": "nodemon src/server.js"
   },
   "dependencies": {
     "cors": "^2.8.5",
