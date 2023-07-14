@@ -20,7 +20,7 @@ const PORT = process.env.PORT || 3000;
 //ROUTES//
 
 //get products
-app.get('/products', async(req, res) => {
+app.get('/products', async(req: object, res: object) => {
   try {
     const allProducts = await pool.query('SELECT * FROM product');
     res.status(200).send(allProducts);
