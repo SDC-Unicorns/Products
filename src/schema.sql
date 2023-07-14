@@ -1,12 +1,22 @@
 /* shell command:  \i /users/victoriajquinto/Desktop/hr/SDC/Products/src/schema.sql; */
 DROP DATABASE sdc;
+DROP TABLE cart;
+DROP TABLE features;
+DROP TABLE photos;
+DROP TABLE product;
+DROP TABLE reviews;
+DROP TABLE related;
+DROP TABLE skus;
+DROP TABLE styles;
 CREATE DATABASE sdc;
+\c sdc;
 
 CREATE TABLE cart (
-  id SERIAL PRIMARY KEY,
+  id INTEGER UNIQUE,
   user_session INTEGER NOT NULL,
   product_id INTEGER NOT NULL,
   active INTEGER NOT NULL,
+  PRIMARY KEY (id)
 );
 \COPY cart from '/USERS/victoriajquinto/Desktop/hr/SDC/Products/data/cart.csv' delimiter ',' header csv;
 
@@ -43,7 +53,7 @@ CREATE TABLE reviews (
   id INTEGER UNIQUE,
   product_id INTEGER,
   rating INTEGER,
-  date TEXT,
+  date VARCHAR(255),
   summary VARCHAR(255),
   body TEXT,
   recommend BOOLEAN,
@@ -57,10 +67,12 @@ CREATE TABLE reviews (
 \COPY reviews from '/USERS/victoriajquinto/Desktop/hr/SDC/Products/data/reviews.csv' delimiter ',' header csv;
 
 CREATE TABLE related (
-  id SERIAL PRIMARY KEY,
+  id INTEGER UNIQUE,
   current_product_id INTEGER NOT NULL,
-  related_product_id INTEGER NOT NULL
+  related_product_id INTEGER NOT NULL,
+  PRIMARY KEY (id)
 );
+\COPY related from '/USERS/victoriajquinto/Desktop/hr/SDC/Products/data/related.csv' delimiter ',' header csv;
 
 CREATE TABLE skus (
   id INTEGER UNIQUE,
