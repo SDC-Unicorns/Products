@@ -51,19 +51,29 @@ app.get('/products/:product_id/styles', async(req, res) => {
     let results = await pool.query('SELECT id, name, sale_price, original_price, default_style FROM styles WHERE productId = $1', product_id);
     let styleIds = results.map(style => {return style.id});
 
-    const photos = await styleIds.map(styleId => {
+    const photosPromises = await styleIds.map(styleId => {
       return getPhotos(styleId);
     });
 
-    const skus = await styleIds.map(styleId => {
+    const skusPromises = await styleIds.map(styleId => {
       return getSkus(styleId);
     });
 
+    const photos = await Promise.all(photosPromises);
+    const skus = await Promise.all(skusPromises);
+
     let info = {
       product_id: product_id,
-      results: results,
+      results: results.map((style, index) => {
+        return {
+          ...style,
+          photos: photos[index],
+          skus: skus[index]
+        }
+      })
     }
-    res.status(200).send(skus);
+    // res.status(200).send(info);
+    res.status(200).send(info);
 
   } catch (error) {
     console.log("error in styles/skus/photos server request: ", error);
@@ -92,7 +102,7 @@ app.listen(PORT, () => {
 
 async function getPhotos (styleId){
   try {
-    let photos = await pool.query('SELECT url, thumbnail_url FROM photos WHERE styleId = $1', styleId);
+    const photos = await pool.query('SELECT url, thumbnail_url FROM photos WHERE styleId = $1', styleId);
     // console.log(photos);
     return photos;
   } catch(error) {
@@ -102,7 +112,7 @@ async function getPhotos (styleId){
 
 async function getSkus (styleId){
   try {
-    let sku = await pool.query('SELECT id, size, quantity FROM skus WHERE styleId = $1', styleId);
+    const sku = await pool.query('SELECT id, size, quantity FROM skus WHERE styleId = $1', styleId);
     console.log(sku);
     return sku;
   } catch(error) {
