@@ -88,7 +88,7 @@ CREATE TABLE styles (
   productId INTEGER,
   name VARCHAR(255),
   sale_price VARCHAR(15),
-  original_original INTEGER NOT NULL,
+  original_price INTEGER NOT NULL,
   default_style BOOLEAN,
   PRIMARY KEY (id)
 );
