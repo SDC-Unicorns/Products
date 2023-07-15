@@ -51,16 +51,6 @@ app.get('/products/:product_id/styles', async(req, res) => {
     let results = await pool.query('SELECT id, name, sale_price, original_price, default_style FROM styles WHERE productId = $1', product_id);
     let styleIds = results.map(style => {return style.id});
 
-    const photosPromises = await styleIds.map(styleId => {
-      return getPhotos(styleId);
-    });
-
-    const skusPromises = await styleIds.map(styleId => {
-      return getSkus(styleId);
-    });
-
-    const photos = await Promise.all(photosPromises);
-    const skus = await Promise.all(skusPromises);
 
     let info = {
       product_id: product_id,
