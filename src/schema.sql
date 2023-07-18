@@ -1,24 +1,14 @@
 /* shell command:  \i /users/victoriajquinto/Desktop/hr/SDC/Products/src/schema.sql; */
 DROP DATABASE sdc;
-DROP TABLE cart;
 DROP TABLE features;
 DROP TABLE photos;
 DROP TABLE product;
-DROP TABLE reviews;
 DROP TABLE related;
 DROP TABLE skus;
 DROP TABLE styles;
 CREATE DATABASE sdc;
 \c sdc;
 
-CREATE TABLE cart (
-  id INTEGER UNIQUE,
-  user_session INTEGER NOT NULL,
-  product_id INTEGER NOT NULL,
-  active INTEGER NOT NULL,
-  PRIMARY KEY (id)
-);
-\COPY cart from '/USERS/victoriajquinto/Desktop/hr/SDC/Products/data/cart.csv' delimiter ',' header csv;
 
 CREATE TABLE features (
   id INTEGER UNIQUE,
@@ -49,23 +39,6 @@ CREATE TABLE product (
 );
 \COPY product from '/USERS/victoriajquinto/Desktop/hr/SDC/Products/data/product.csv' delimiter ',' header csv;
 
-CREATE TABLE reviews (
-  id INTEGER UNIQUE,
-  product_id INTEGER,
-  rating INTEGER,
-  date VARCHAR(255),
-  summary VARCHAR(255),
-  body TEXT,
-  recommend BOOLEAN,
-  reported BOOLEAN,
-  reviewer_name VARCHAR(255),
-  reviewer_email VARCHAR(255),
-  response VARCHAR(255),
-  helpfulness INTEGER,
-  PRIMARY KEY (id)
-);
-\COPY reviews from '/USERS/victoriajquinto/Desktop/hr/SDC/Products/data/reviews.csv' delimiter ',' header csv;
-
 CREATE TABLE related (
   id INTEGER UNIQUE,
   current_product_id INTEGER NOT NULL,
@@ -93,3 +66,10 @@ CREATE TABLE styles (
   PRIMARY KEY (id)
 );
 \COPY styles from '/USERS/victoriajquinto/Desktop/hr/SDC/Products/data/styles.csv' delimiter ',' header csv;
+
+CREATE INDEX ON product (id);
+CREATE INDEX ON styles (productId);
+CREATE INDEX ON photos (styleId);
+CREATE INDEX ON skus (styleId);
+CREATE INDEX ON features (product_id);
+CREATE INDEX ON related (current_product_id);

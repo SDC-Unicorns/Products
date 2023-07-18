@@ -22,7 +22,7 @@ const PORT = process.env.PORT || 3000;
 //get products
 app.get('/products', async(req, res) => {
   try {
-    const allProducts = await pool.query('SELECT * FROM product LIMIT 500');
+    const allProducts = await pool.query('SELECT * FROM product LIMIT 10000');
     res.status(200).send(allProducts);
   } catch (error) {
     console.log("error in product server request: ", error);
@@ -34,10 +34,24 @@ app.get('/products', async(req, res) => {
 app.get('/products/:product_id', async(req, res) => {
   try {
     const id = req.params.product_id;
-    let indivProduct = await pool.query('SELECT * FROM product WHERE id = $1', id);
-    const features = await pool.query('SELECT feature, value FROM features WHERE product_id = $1', id);
-    let result = {...indivProduct[0], features};
-    res.status(200).send(result);
+    let queryString =
+    `SELECT
+      p.*,
+      JSONB_AGG(
+        JSONB_BUILD_OBJECT(
+          'feature', f.feature,
+          'value', f.value
+        )
+      ) AS features
+      FROM
+        product p
+      INNER JOIN
+        features f ON p.id = f.product_id
+      WHERE p.id = $1
+      GROUP BY
+        p.id, p.name;`;
+    let results = await pool.query(queryString, id);
+    res.status(200).send(results);
   } catch (error) {
     console.log("error in productS server request: ", error);
     res.status(400).send(error);
@@ -48,33 +62,43 @@ app.get('/products/:product_id', async(req, res) => {
 app.get('/products/:product_id/styles', async(req, res) => {
   try {
     const product_id = req.params.product_id;
-    let results = await pool.query('SELECT id, name, sale_price, original_price, default_style FROM styles WHERE productId = $1', product_id);
-    let styleIds = results.map(style => {return style.id});
-
-    const photosPromises = await styleIds.map(styleId => {
-      return getPhotos(styleId);
-    });
-
-    const skusPromises = await styleIds.map(styleId => {
-      return getSkus(styleId);
-    });
-
-    const photos = await Promise.all(photosPromises);
-    const skus = await Promise.all(skusPromises);
-
-    let info = {
-      product_id: product_id,
-      results: results.map((style, index) => {
-        return {
-          ...style,
-          photos: photos[index],
-          skus: skus[index]
-        }
-      })
-    }
-    // res.status(200).send(info);
-    res.status(200).send(info);
-
+    const queryString = `SELECT
+    p.id AS product_id,
+    json_agg(json_build_object(
+      'style_id', s.id,
+      'name', s.name,
+      'original_price', s.original_price,
+      'sale_price', s.sale_price,
+      'default?', s.default_style,
+      'photos', photos,
+      'skus', skus
+    ) ORDER BY s.id) AS results
+    FROM
+      product p
+    JOIN
+      styles s ON p.id = s.productId
+    LEFT JOIN LATERAL (
+      SELECT json_agg(json_build_object(
+        'thumbnail_url', ph.thumbnail_url,
+        'url', ph.url
+      )) AS photos
+      FROM photos ph
+      WHERE s.id = ph.styleId
+    ) photos ON true
+    LEFT JOIN LATERAL (
+      SELECT json_object_agg(sk.id, json_build_object(
+        'quantity', sk.quantity,
+        'size', sk.size
+      )) AS skus
+      FROM skus sk
+      WHERE s.id = sk.styleId
+    ) skus ON true
+    WHERE
+      p.id = $1
+    GROUP BY
+      p.id;`
+    let results = await pool.query(queryString, product_id);
+    res.status(200).send(results);
   } catch (error) {
     console.log("error in styles/skus/photos server request: ", error);
     res.status(400).send(error);
@@ -98,25 +122,6 @@ app.listen(PORT, () => {
   console.log(`server has started on port ${PORT}`)
 });
 
-//HELPERS
 
-async function getPhotos (styleId){
-  try {
-    const photos = await pool.query('SELECT url, thumbnail_url FROM photos WHERE styleId = $1', styleId);
-    // console.log(photos);
-    return photos;
-  } catch(error) {
-    console.log('error in getPhotos: ', error)
-  }
-}
 
-async function getSkus (styleId){
-  try {
-    const sku = await pool.query('SELECT id, size, quantity FROM skus WHERE styleId = $1', styleId);
-    console.log(sku);
-    return sku;
-  } catch(error) {
-    console.log('error in getSkus: ', error)
-  }
-}
 
