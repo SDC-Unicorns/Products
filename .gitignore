@@ -1,3 +1,5 @@
 node_modules/
 data/
 .env
+SDCServer.pem
+SDCDatabase.pem
