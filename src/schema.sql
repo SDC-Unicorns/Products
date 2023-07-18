@@ -1,6 +1,5 @@
 /* shell command:  \i /users/victoriajquinto/Desktop/hr/SDC/Products/src/schema.sql; */
 DROP DATABASE sdc;
-DROP TABLE cart;
 DROP TABLE features;
 DROP TABLE photos;
 DROP TABLE product;
@@ -10,14 +9,6 @@ DROP TABLE styles;
 CREATE DATABASE sdc;
 \c sdc;
 
-CREATE TABLE cart (
-  id INTEGER UNIQUE,
-  user_session INTEGER NOT NULL,
-  product_id INTEGER NOT NULL,
-  active INTEGER NOT NULL,
-  PRIMARY KEY (id)
-);
-\COPY cart from '/USERS/victoriajquinto/Desktop/hr/SDC/Products/data/cart.csv' delimiter ',' header csv;
 
 CREATE TABLE features (
   id INTEGER UNIQUE,

@@ -50,8 +50,8 @@ app.get('/products/:product_id', async(req, res) => {
       WHERE p.id = $1
       GROUP BY
         p.id, p.name;`;
-    let result = await pool.query(queryString, id);
-    res.status(200).send(result[0]);
+    let results = await pool.query(queryString, id);
+    res.status(200).send(results);
   } catch (error) {
     console.log("error in productS server request: ", error);
     res.status(400).send(error);
