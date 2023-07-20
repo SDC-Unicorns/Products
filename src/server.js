@@ -27,6 +27,7 @@ app.get('/products', async(req, res) => {
   } catch (error) {
     console.log("error in product server request: ", error);
     res.status(400).send(error);
+  
   }
 });
 
