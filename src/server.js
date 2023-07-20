@@ -22,7 +22,7 @@ const PORT = process.env.PORT || 3000;
 //get products
 app.get('/products', async(req, res) => {
   try {
-    const allProducts = await pool.query('SELECT * FROM product LIMIT 10000');
+    const allProducts = await pool.query('SELECT * FROM product LIMIT 200');
     res.status(200).send(allProducts);
   } catch (error) {
     console.log("error in product server request: ", error);
@@ -118,13 +118,13 @@ app.get('/products/:product_id/related', async(req, res) => {
   }
 });
 
-app.get(`${process.env.LOADER_IO_URL}`, async (req, res) => {
-  try{
-    res.status(200).send(process.env.LOADER_IO_TOKEN);
-  } catch (error) {
-    console.log('error in loaderio verification', error);
-  };
-});
+// app.get('http://3.95.153.44:9000/loaderio-151677548dc745b7ce23f60ea89d/', async (req, res) => {
+//   try{
+//     res.status(200).send(process.env.LOADER_IO_TOKEN);
+//   } catch (error) {
+//     console.log('error in loaderio verification', error);
+//   };
+// });
 
 app.listen(PORT, () => {
   console.log(`server has started on port ${PORT}`)
