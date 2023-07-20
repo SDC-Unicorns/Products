@@ -119,7 +119,7 @@ app.get('/products/:product_id/related', async(req, res) => {
   }
 });
 
-app.get('http://3.95.153.44:9000/loaderio-151677548dc745b7ce23f60ea89d7358/', async (req, res) => {
+app.get('/loaderio-151677548dc745b7ce23f60ea89d7358/', async (req, res) => {
   try{
     res.status(200).send('loaderio-151677548dc745b7ce23f60ea89d7358');
   } catch (error) {
