@@ -119,7 +119,6 @@ app.get('/products/:product_id/related', async(req, res) => {
   }
 });
 
-
 app.get(`${process.env.LOADER_IO_ENDPOINT}`, async (req, res) => {
   try{
     res.status(200).send(process.env.LOADER_IO_TOKEN);
