@@ -124,6 +124,7 @@ app.get(`${process.env.LOADER_IO_ENDPOINT}`, async (req, res) => {
     res.status(200).send(process.env.LOADER_IO_TOKEN);
   } catch (error) {
     console.log('error in loaderio verification', error);
+    res.status(400).send(error);
   };
 });
 
